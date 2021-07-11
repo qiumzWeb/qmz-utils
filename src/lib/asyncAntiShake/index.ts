@@ -25,11 +25,7 @@ export default function asyncAntiShake (request: any, cxt: any = undefined) {
                 delete requestBox[key]
             }
         }
-        for (var key in request) {
-            if (request.hasOwnProperty(key)) {
-                newRequest[key] = asyncAntiShake(request[key])
-            }
-        }
+        return newRequest
     } else {
         return request
     }
