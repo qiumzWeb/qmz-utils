@@ -75,11 +75,7 @@ export default function asyncAntiShake(request, cxt) {
                 });
             });
         };
-        for (var key in request) {
-            if (request.hasOwnProperty(key)) {
-                newRequest[key] = asyncAntiShake(request[key]);
-            }
-        }
+        return newRequest;
     }
     else {
         return request;
