@@ -1,3 +1,26 @@
+
+/**
+ * @desc 判断是不是null
+ * @param {Any} val
+ */
+export const isNUll = val => typeof val === 'object' && !val;
+
+/**
+ * @desc 判断是不是JSON数据
+ * @param {Any} val
+ */
+export const isJSON = str => {
+  if (typeof str === 'string') {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  return false;
+};
+
 /**
 * @desc 合并对象
 * @param {Object} (a, b)
@@ -250,3 +273,236 @@ export function getUuid(s:any):any {
     var m = window.location.search.match(new RegExp("(\\?|&)" + q + "=([^&]*)(&|$)"));
     return !m ? "" : decodeURIComponent(m[2]);
   }
+
+  /**
+ * @desc 异步防抖
+ * @param {*} val 
+ * @returns 
+ */
+export function AsyncDebounce(fn:any, delay = 300) {
+  let timer = null;
+  return async function(...args) {
+    clearTimeout(timer)
+    const res = await new Promise((resolve, reject) => {
+      timer = setTimeout(() => {
+        getResult(fn, ...args).then(resolve).catch(reject).finally(() => clearTimeout(timer))
+      }, delay)
+    })
+    return res
+  }
+}
+
+/**
+ * @desc 获取设备
+ * @return {Boolean}
+ */
+export function getDevice() {
+  const u  = window.navigator.userAgent
+  return {
+    isPhone: !!u.match(/AppleWebKit.*Mobile.*/),
+    isPad: u.indexOf('iPad') > -1,
+    IsAndroid: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1,
+    isIos: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/),
+    isIPhone: u.indexOf('iPhone') > -1
+  }
+}
+/**
+ * @desc 判断http 路径
+ * @param {*} url 
+ * @returns {Boolean}
+ */
+export function isHttpUrl(url) {
+  return /^(https?:)?\/\//.test(url)
+}
+
+/**
+ * 保留两位小数千分位
+ * @param {*} num 
+ * @param {*} precision 
+ * @returns 
+ */
+export const decimal = (num, precision = 2) => {
+  if (typeof num !== 'number' && !num) {
+    return ''
+  }
+  if (typeof num === 'string' && (num.includes('**') || num.includes('✽✽'))) {
+    return num
+  }
+  return `${(+num).toFixed(precision).replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, '$&,')}`
+}
+/**
+ * 千分位
+ * @param {*} num 
+ * @returns 
+ */
+export const thousands = (num) => {
+  if (!num) return 0
+  if (isNaN(num)) return num
+  return (+num).toLocaleString()
+}
+
+/**
+ * 等待
+ */
+export async function sleepTime(time = 0, cb) {
+  let timer = null
+  await new Promise(resolve => {
+    function getStatus() {
+      timer = setTimeout(() => {
+        if (typeof cb === 'function') {
+          if (cb()) {
+            resolve(true)
+          } else {
+            getStatus()
+          }
+        } else {
+          resolve(true)
+        }
+        clearTimeout(timer)
+      }, time)
+    }
+    getStatus()
+  })
+  return timer
+}
+
+/**
+ * 通过value 匹配 label 值
+ */
+export function _getName(options, value, _ = "") {
+  return Array.isArray(options) ? (
+    (options.find(o => isObj(o) && o.value == value) || {label: _ }).label
+  ) : value
+}
+export function isAllIncludes(options, value) {
+  value = Array.isArray(value) ? value : [value]
+  return Array.isArray(options) && value.every(v => options.some(s => s.value == v))
+}
+
+// 空数据过虑
+export function filterNotEmptyData(data) {
+  const newData = {}
+  Object.entries(data).forEach(([key, val]) => {
+    isTrue(val) && (newData[key] = val)
+  })
+  return newData
+}
+
+// 获取可枚举长度空数组
+export function getEmptyList(length = 0) {
+  return new Array(length).fill(undefined)
+}
+
+
+// 下载数据
+export function download(res, {fileName, mimeType} = {fileName: 'data.txt', mimeType: 'text/plain;charset=utf-8'}) {
+  const blob = new Blob(res, {type: mimeType})
+  if ((window.navigator as any).msSaveBlob) { // IE
+    (window.navigator as any).msSaveBlob(blob, fileName)
+  } else { // 其它
+    const url = window.URL.createObjectURL(blob)
+    let a = document.createElement('a')
+    a.download = fileName
+    a.href= url
+    a.click()
+    window.URL.revokeObjectURL(url)
+    a = null
+  }
+}
+
+// 获取TextArea 批量code , 支持 空格 回车 换行 制表符, 自定义符号
+export function getStringCodeToArray(strCode, split) {
+  if (typeof strCode === 'string') {
+    let reg = /\s|\r|\n|\t/;
+    if (split) {
+      reg = split
+    }
+    const trimStr = strCode.trim();
+    return trimStr.split(reg).filter(s => s);
+  } else {
+    return []
+  }
+}
+// 判断是否是无效时间
+export function isInvalidDate(time) {
+  return new Date(time) == 'Invalid Date'
+}
+
+// 短字符串（HH:mm:ss）转时间长字符串(YYYY-MM-DD HH:mm:ss)
+export function getShortStrToTimeLongStr(str) {
+  const format = [
+    /^[0-2]?[0-9]\:[0-6]?[0-9]$/,
+    /^[0-2]?[0-9]\:[0-6]?[0-9]\:[0-6]?[0-9]$/,
+  ]
+  if (format.some(reg => reg.test(str))) {
+    return new Date().toLocaleDateString() + ` ${str}`
+  }
+  if (isInvalidDate(str)) {
+    return new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()
+  }
+  return str
+}
+
+// 时间戳 转换为 HH:mm:ss
+export function getToTT(str) {
+  if (isNaN(str)) return '00';
+  return String(str)[1] ? str : '0' + str;
+}
+export function getTimeStampToHMS(timeStamp:number, lang = 'zh') {
+  if (isNaN(timeStamp)) return timeStamp;
+  const time:number = timeStamp / 1000;
+  const d = parseInt(time / (3600 * 24) + '')
+  const ht = time % (3600 * 24)
+  const h = parseInt(ht / 3600 + '');
+  const mt = ht % 3600
+  const m = parseInt(mt / 60 + '');
+  const st = mt % 60
+  const s = parseInt(st + '');
+  const g = (t, n) => t ? t + n : '';
+  const output = {
+    en: getToTT(h) + ':' + getToTT(m) + ':' + getToTT(s),
+    zh: g(d, '天') + g(h, '小时') + g(m, '分钟') + g(s, '秒')
+  }
+  return output[lang] || timeStamp
+}
+
+// 判断两个符串是否相同，不区分大小写
+export function isSameURLStr(str1, str2) {
+  if (typeof str1 === 'string' && typeof str2 === 'string') {
+    return str1.toLowerCase() === str2.toLowerCase()
+  }
+  return false
+}
+
+// 多选字段转换为字符串提交
+export function transMultipleToStr(val, { action }) {
+  const result = {
+    inset: typeof val === 'string' && val.split(',').filter(f => isTrue(f)) || [],
+    output: Array.isArray(val) && val.join() || ''
+  }
+  return result[action]
+}
+
+/**
+ * 
+ * @param {*} obj 需要取值的 对象
+ * @param {*} key 提供取值的key 
+ * @returns 
+ */
+// 获取对象对应 key 的值 ，支持 key.childKey 模式
+export function getValueOfObj(obj, key) {
+  if (isEmpty(obj) || isEmpty(key)) return null;
+  const keys = String(key).split('.').filter(f => f);
+  const value = keys.reduce((item, key) => {
+    return ['Object', 'Array'].includes(getObjType(item)) ? item[key] : item
+  }, obj);
+  return value
+}
+
+/**
+ * 数字转百分比
+ */
+export function NumToPercentage(num, radix = 100, unit = "%") {
+  if (isNaN(num)) return '-' + unit;
+  return decimal(+num * radix) + unit;
+}
