@@ -16,7 +16,7 @@ class DBStorage {
     return new Promise((resolve, reject) => {
       try {
         const openDB = window.indexedDB.open(name)
-        openDB.onerror = function(error) {
+        openDB.onerror = function() {
           resolve(false)
         }
         openDB.onupgradeneeded = event => {
@@ -40,7 +40,7 @@ class DBStorage {
   }
   // 读取数据
   get(name) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async(resolve) => {
       try {
         await this.open(this.dbName)
         const request = this.createTransaction('readonly').get(name)
@@ -64,7 +64,7 @@ class DBStorage {
   }
   // 新增数据
   add(name, value) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async(resolve) => {
       try {
         await this.open(this.dbName)
         const request = this.createTransaction().add({
@@ -74,7 +74,7 @@ class DBStorage {
         request.onsuccess = () => {
           resolve(this)
         }
-        request.onerror = error => {
+        request.onerror = () => {
           resolve(false)
         }
       } catch(e) {
@@ -84,14 +84,14 @@ class DBStorage {
   }
   // 删除数据
   remove(name) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async(resolve) => {
       try {
         await this.open(this.dbName)
         const request = this.createTransaction().delete(name)
         request.onsuccess = () => {
           resolve(true)
         }
-        request.onerror = error => {
+        request.onerror = () => {
           resolve(false)
         }
       } catch(e) {
@@ -101,7 +101,7 @@ class DBStorage {
   }
   // 清空
   clear(noClearArr) {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async(resolve) => {
       try {
         const keys:any = await this.getAllKeys()
         let clearKeys = keys
@@ -118,7 +118,7 @@ class DBStorage {
   }
   // 获取所有keys
   getAllKeys() {
-    return new Promise(async(resolve, reject) => {
+    return new Promise(async(resolve) => {
       try {
         await this.open(this.dbName)
         const request = this.createTransaction().getAllKeys()

@@ -38,29 +38,34 @@ var DBStorage = /** @class */ (function () {
     function DBStorage(name) {
         this.db = '';
         this.dbName = name;
+        this._events_ = {};
+        this.setTimers = {};
+        this.setPromises = {};
     }
     // 打开db
     DBStorage.prototype.open = function (name) {
         var _this = this;
-        return new Promise(function (resolve) {
-            var openDB = window.indexedDB.open(name);
-            openDB.onerror = function (error) {
-                var _a, _b;
-                console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.target) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.message);
-                resolve(false);
-            };
-            openDB.onupgradeneeded = function (event) {
-                var _a;
-                var db = (_a = event === null || event === void 0 ? void 0 : event.target) === null || _a === void 0 ? void 0 : _a.result;
-                var dbStorate = db.createObjectStore(name, { keyPath: 'id' });
-                dbStorate.createIndex('value', 'value', { unique: true });
-            };
-            openDB.onsuccess = function (event) {
-                var db = event.target.result;
-                _this.db = db;
-                _this.dbName = name;
-                resolve(_this);
-            };
+        return new Promise(function (resolve, reject) {
+            try {
+                var openDB = window.indexedDB.open(name);
+                openDB.onerror = function () {
+                    resolve(false);
+                };
+                openDB.onupgradeneeded = function (event) {
+                    var db = event.target.result;
+                    var dbStorate = db.createObjectStore(name, { keyPath: 'id' });
+                    dbStorate.createIndex('value', 'value', { unique: true });
+                };
+                openDB.onsuccess = function (event) {
+                    var db = event.target.result;
+                    _this.db = db;
+                    _this.dbName = name;
+                    resolve(_this);
+                };
+            }
+            catch (e) {
+                reject(e);
+            }
         });
     };
     // 创建事务
@@ -68,6 +73,36 @@ var DBStorage = /** @class */ (function () {
         if (type === void 0) { type = 'readwrite'; }
         return this.db.transaction([this.dbName], type)
             .objectStore(this.dbName);
+    };
+    // 读取数据
+    DBStorage.prototype.get = function (name) {
+        var _this = this;
+        return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
+            var request, e_1;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.open(this.dbName)];
+                    case 1:
+                        _a.sent();
+                        request = this.createTransaction('readonly').get(name);
+                        request.onerror = function (error) {
+                            console.log(error.target.error.message);
+                            resolve(false);
+                        };
+                        request.onsuccess = function (e) {
+                            resolve(e.target.result && e.target.result.value || null);
+                        };
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_1 = _a.sent();
+                        resolve(null);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
+                }
+            });
+        }); });
     };
     // 存储数据
     DBStorage.prototype.set = function (name, value) {
@@ -80,6 +115,7 @@ var DBStorage = /** @class */ (function () {
                         return [4 /*yield*/, this.add(name, value)];
                     case 2:
                         _a.sent();
+                        this.$emit(name, value);
                         return [2 /*return*/];
                 }
             });
@@ -89,11 +125,13 @@ var DBStorage = /** @class */ (function () {
     DBStorage.prototype.add = function (name, value) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-            var request;
+            var request, e_2;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.open(this.dbName)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.open(this.dbName)];
                     case 1:
                         _a.sent();
                         request = this.createTransaction().add({
@@ -103,37 +141,15 @@ var DBStorage = /** @class */ (function () {
                         request.onsuccess = function () {
                             resolve(_this);
                         };
-                        request.onerror = function (error) {
-                            var _a, _b;
-                            console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.target) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.message);
+                        request.onerror = function () {
                             resolve(false);
                         };
-                        return [2 /*return*/];
-                }
-            });
-        }); });
-    };
-    // 读取数据
-    DBStorage.prototype.get = function (name) {
-        var _this = this;
-        return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-            var request;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.open(this.dbName)];
-                    case 1:
-                        _a.sent();
-                        request = this.createTransaction('readonly').get(name);
-                        request.onerror = function (error) {
-                            var _a, _b;
-                            console.log((_b = (_a = error === null || error === void 0 ? void 0 : error.target) === null || _a === void 0 ? void 0 : _a.error) === null || _b === void 0 ? void 0 : _b.message);
-                            resolve(false);
-                        };
-                        request.onsuccess = function (e) {
-                            var _a, _b, _c;
-                            resolve(((_a = e === null || e === void 0 ? void 0 : e.target) === null || _a === void 0 ? void 0 : _a.result) && ((_c = (_b = e === null || e === void 0 ? void 0 : e.target) === null || _b === void 0 ? void 0 : _b.result) === null || _c === void 0 ? void 0 : _c.value) || null);
-                        };
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_2 = _a.sent();
+                        resolve(false);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });
@@ -142,21 +158,27 @@ var DBStorage = /** @class */ (function () {
     DBStorage.prototype.remove = function (name) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-            var request;
+            var request, e_3;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.open(this.dbName)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.open(this.dbName)];
                     case 1:
                         _a.sent();
                         request = this.createTransaction().delete(name);
                         request.onsuccess = function () {
                             resolve(true);
                         };
-                        request.onerror = function (error) {
-                            console.log(error.target.error.message);
+                        request.onerror = function () {
                             resolve(false);
                         };
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_3 = _a.sent();
+                        resolve(false);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });
@@ -165,22 +187,28 @@ var DBStorage = /** @class */ (function () {
     DBStorage.prototype.clear = function (noClearArr) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-            var keys, clearKeys;
+            var keys, clearKeys, e_4;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.getAllKeys()];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.getAllKeys()];
                     case 1:
                         keys = _a.sent();
                         clearKeys = keys;
                         if (Array.isArray(noClearArr)) {
                             clearKeys = keys.filter(function (e) { return !noClearArr.includes(e); });
                         }
-                        Array.isArray(clearKeys) && clearKeys.forEach(function (k) {
+                        clearKeys.forEach(function (k) {
                             _this.remove(k);
                         });
-                        resolve(true);
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_4 = _a.sent();
+                        resolve(false);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });
@@ -189,24 +217,51 @@ var DBStorage = /** @class */ (function () {
     DBStorage.prototype.getAllKeys = function () {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
-            var request;
+            var request_1, e_5;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.open(this.dbName)];
+                    case 0:
+                        _a.trys.push([0, 2, , 3]);
+                        return [4 /*yield*/, this.open(this.dbName)];
                     case 1:
                         _a.sent();
-                        request = this.createTransaction().getAllKeys();
-                        request.onsuccess = function () {
-                            resolve(request.result);
+                        request_1 = this.createTransaction().getAllKeys();
+                        request_1.onsuccess = function () {
+                            resolve(request_1.result || []);
                         };
-                        request.onerror = function (error) {
+                        request_1.onerror = function (error) {
                             console.log(error.target.error.message);
                             resolve([]);
                         };
-                        return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        e_5 = _a.sent();
+                        resolve([]);
+                        return [3 /*break*/, 3];
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });
+    };
+    // 监听数据变动
+    DBStorage.prototype.watch = function (name, fn) {
+        var _this = this;
+        if (name && typeof fn === 'function') {
+            if (!this._events_[name]) {
+                this._events_[name] = [];
+            }
+            this._events_[name].push(fn);
+        }
+        return function () {
+            (_this._events_[name] = _this._events_[name].filter(function (e) { return e !== fn; }));
+        };
+    };
+    DBStorage.prototype.$emit = function (name, value) {
+        if (this._events_[name] && Array.isArray(this._events_[name])) {
+            this._events_[name].forEach(function (fn) {
+                fn(value);
+            });
+        }
     };
     return DBStorage;
 }());

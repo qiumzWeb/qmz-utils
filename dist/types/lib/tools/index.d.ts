@@ -1,4 +1,14 @@
 /**
+ * @desc 判断是不是null
+ * @param {Any} val
+ */
+export declare const isNUll: (val: any) => boolean;
+/**
+ * @desc 判断是不是JSON数据
+ * @param {Any} val
+ */
+export declare const isJSON: (str: any) => boolean;
+/**
 * @desc 合并对象
 * @param {Object} (a, b)
 * @return {Object} (a)
@@ -105,4 +115,75 @@ export declare function getUuid(s: any): any;
  * @return {String}
  */
 export declare function getQuery(q: any): any;
+/**
+* @desc 异步防抖
+* @param {*} val
+* @returns
+*/
+export declare function AsyncDebounce(fn: any, delay?: number): (...args: any[]) => Promise<unknown>;
+/**
+ * @desc 获取设备
+ * @return {Boolean}
+ */
+export declare function getDevice(): {
+    isPhone: boolean;
+    isPad: boolean;
+    IsAndroid: boolean;
+    isIos: boolean;
+    isIPhone: boolean;
+};
+/**
+ * @desc 判断http 路径
+ * @param {*} url
+ * @returns {Boolean}
+ */
+export declare function isHttpUrl(url: any): boolean;
+/**
+ * 保留两位小数千分位
+ * @param {*} num
+ * @param {*} precision
+ * @returns
+ */
+export declare const decimal: (num: any, precision?: number) => string;
+/**
+ * 千分位
+ * @param {*} num
+ * @returns
+ */
+export declare const thousands: (num: any) => any;
+/**
+ * 等待
+ */
+export declare function sleepTime(time: number, cb: any): Promise<any>;
+/**
+ * 通过value 匹配 label 值
+ */
+export declare function _getName(options: any, value: any, _?: string): any;
+export declare function isAllIncludes(options: any, value: any): any;
+export declare function filterNotEmptyData(data: any): {};
+export declare function getEmptyList(length?: number): any[];
+export declare function download(res: any, { fileName, mimeType }?: {
+    fileName: string;
+    mimeType: string;
+}): void;
+export declare function getStringCodeToArray(strCode: any, split: any): string[];
+export declare function isInvalidDate(time: any): boolean;
+export declare function getShortStrToTimeLongStr(str: any): any;
+export declare function getToTT(str: any): any;
+export declare function getTimeStampToHMS(timeStamp: number, lang?: string): any;
+export declare function isSameURLStr(str1: any, str2: any): boolean;
+export declare function transMultipleToStr(val: any, { action }: {
+    action: any;
+}): any;
+/**
+ *
+ * @param {*} obj 需要取值的 对象
+ * @param {*} key 提供取值的key
+ * @returns
+ */
+export declare function getValueOfObj(obj: any, key: any): any;
+/**
+ * 数字转百分比
+ */
+export declare function NumToPercentage(num: any, radix?: number, unit?: string): string;
 //# sourceMappingURL=index.d.ts.map

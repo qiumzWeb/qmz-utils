@@ -424,8 +424,8 @@ export function getStringCodeToArray(strCode, split) {
   }
 }
 // 判断是否是无效时间
-export function isInvalidDate(time) {
-  return new Date(time) == 'Invalid Date'
+export function isInvalidDate(time:any) {
+  return (new Date(time) as any) == 'Invalid Date'
 }
 
 // 短字符串（HH:mm:ss）转时间长字符串(YYYY-MM-DD HH:mm:ss)

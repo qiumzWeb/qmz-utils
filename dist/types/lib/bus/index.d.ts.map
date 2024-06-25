@@ -1,1 +1,1 @@
-{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../../src/lib/bus/index.ts"],"names":[],"mappings":";;;;cAMW,MAAM,MAAK,GAAG;gBAQZ,MAAM,WAAU,GAAG;gBAOnB,MAAM;oBAOF,GAAG;kBAIL,GAAG;wBAQG,GAAG;;AAtCxB,wBA2CE"}
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../../../src/lib/bus/index.ts"],"names":[],"mappings":"AAEA,wBAAgB,SAAS,CAAC,aAAa,EAAC,MAAM;;;;cAKjC,MAAM,MAAK,QAAQ;gBAQjB,MAAM;;;;;;EA8CpB;;;;;;;;;;;;;AAED,wBAAiC"}
