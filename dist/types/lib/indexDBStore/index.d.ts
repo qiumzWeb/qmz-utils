@@ -1,4 +1,4 @@
-declare class DBStorage {
+export declare class QmzDBStorage {
     db: any;
     dbName: string;
     _events_: any;
@@ -16,6 +16,5 @@ declare class DBStorage {
     watch(name: any, fn: any): () => void;
     $emit(name: any, value: any): void;
 }
-export default function CreateDBStore(name: string): DBStorage;
-export {};
+export default function CreateQmzDBStore(name: string): QmzDBStorage;
 //# sourceMappingURL=index.d.ts.map

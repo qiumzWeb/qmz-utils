@@ -34,8 +34,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var DBStorage = /** @class */ (function () {
-    function DBStorage(name) {
+var QmzDBStorage = /** @class */ (function () {
+    function QmzDBStorage(name) {
         this.db = '';
         this.dbName = name;
         this._events_ = {};
@@ -43,7 +43,7 @@ var DBStorage = /** @class */ (function () {
         this.setPromises = {};
     }
     // 打开db
-    DBStorage.prototype.open = function (name) {
+    QmzDBStorage.prototype.open = function (name) {
         var _this = this;
         return new Promise(function (resolve, reject) {
             try {
@@ -69,13 +69,13 @@ var DBStorage = /** @class */ (function () {
         });
     };
     // 创建事务
-    DBStorage.prototype.createTransaction = function (type) {
+    QmzDBStorage.prototype.createTransaction = function (type) {
         if (type === void 0) { type = 'readwrite'; }
         return this.db.transaction([this.dbName], type)
             .objectStore(this.dbName);
     };
     // 读取数据
-    DBStorage.prototype.get = function (name) {
+    QmzDBStorage.prototype.get = function (name) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var request, e_1;
@@ -105,7 +105,7 @@ var DBStorage = /** @class */ (function () {
         }); });
     };
     // 存储数据
-    DBStorage.prototype.set = function (name, value) {
+    QmzDBStorage.prototype.set = function (name, value) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -122,7 +122,7 @@ var DBStorage = /** @class */ (function () {
         });
     };
     // 新增数据
-    DBStorage.prototype.add = function (name, value) {
+    QmzDBStorage.prototype.add = function (name, value) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var request, e_2;
@@ -155,7 +155,7 @@ var DBStorage = /** @class */ (function () {
         }); });
     };
     // 删除数据
-    DBStorage.prototype.remove = function (name) {
+    QmzDBStorage.prototype.remove = function (name) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var request, e_3;
@@ -184,7 +184,7 @@ var DBStorage = /** @class */ (function () {
         }); });
     };
     // 清空
-    DBStorage.prototype.clear = function (noClearArr) {
+    QmzDBStorage.prototype.clear = function (noClearArr) {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var keys, clearKeys, e_4;
@@ -214,7 +214,7 @@ var DBStorage = /** @class */ (function () {
         }); });
     };
     // 获取所有keys
-    DBStorage.prototype.getAllKeys = function () {
+    QmzDBStorage.prototype.getAllKeys = function () {
         var _this = this;
         return new Promise(function (resolve) { return __awaiter(_this, void 0, void 0, function () {
             var request_1, e_5;
@@ -244,7 +244,7 @@ var DBStorage = /** @class */ (function () {
         }); });
     };
     // 监听数据变动
-    DBStorage.prototype.watch = function (name, fn) {
+    QmzDBStorage.prototype.watch = function (name, fn) {
         var _this = this;
         if (name && typeof fn === 'function') {
             if (!this._events_[name]) {
@@ -256,16 +256,17 @@ var DBStorage = /** @class */ (function () {
             (_this._events_[name] = _this._events_[name].filter(function (e) { return e !== fn; }));
         };
     };
-    DBStorage.prototype.$emit = function (name, value) {
+    QmzDBStorage.prototype.$emit = function (name, value) {
         if (this._events_[name] && Array.isArray(this._events_[name])) {
             this._events_[name].forEach(function (fn) {
                 fn(value);
             });
         }
     };
-    return DBStorage;
+    return QmzDBStorage;
 }());
-export default function CreateDBStore(name) {
-    return new DBStorage(name);
+export { QmzDBStorage };
+export default function CreateQmzDBStore(name) {
+    return new QmzDBStorage(name);
 }
 //# sourceMappingURL=index.js.map

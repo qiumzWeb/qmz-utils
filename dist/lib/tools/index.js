@@ -306,12 +306,16 @@ export function isTrue(target) {
     return target !== null && target !== undefined && target !== '';
 }
 /**
-* @desc 随机生成uuid
-* @param {String} val
-* @return {String}
-*/
+ * @desc 随机生成uuid
+ * @param {String} val
+ * @return {String}
+ */
 export function getUuid(s) {
-    return s + (Date.now().toString(32) + Math.random() * Math.pow(10, 5)).split('.')[0];
+    if (s === void 0) { s = ''; }
+    return s + _uid() + _uid() + _uid() + Date.now().toString(32);
+}
+export function _uid() {
+    return (Math.random() * 9999).toString(32).split('.')[1].slice(-4);
 }
 /**
  * @desc 获取地址栏参数

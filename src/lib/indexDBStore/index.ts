@@ -1,4 +1,4 @@
-class DBStorage {
+export class QmzDBStorage {
   db: any
   dbName: string
   _events_: any
@@ -156,6 +156,6 @@ class DBStorage {
   }
 }
 
-export default function CreateDBStore(name: string) {
-  return new DBStorage(name)
+export default function CreateQmzDBStore(name: string) {
+  return new QmzDBStorage(name)
 }

@@ -104,11 +104,12 @@ export declare function isObj(target: any): any;
 */
 export declare function isTrue(target: any): any;
 /**
-* @desc 随机生成uuid
-* @param {String} val
-* @return {String}
-*/
-export declare function getUuid(s: any): any;
+ * @desc 随机生成uuid
+ * @param {String} val
+ * @return {String}
+ */
+export declare function getUuid(s?: string): string;
+export declare function _uid(): string;
 /**
  * @desc 获取地址栏参数
  * @param {String} val
