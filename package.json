@@ -1,6 +1,6 @@
 {
   "name": "qmz-utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "qmz-utils",
   "main": "./dist/index.js",
   "author": {
