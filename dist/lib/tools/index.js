@@ -587,6 +587,17 @@ export function isSameURLStr(str1, str2) {
     }
     return false;
 }
+/**
+ * 字符串对比
+ */
+export function isSame(str1, str2) {
+    if (typeof str1 === 'string' && typeof str2 === 'string') {
+        return str1.toLowerCase().trim() == str2.toLowerCase().trim();
+    }
+    else {
+        return str1 == str2;
+    }
+}
 // 多选字段转换为字符串提交
 export function transMultipleToStr(val, _a) {
     var action = _a.action;
@@ -636,4 +647,77 @@ export var inputOnEnter = function (callBack) {
         }
     };
 };
+/**
+ * 接口轮询
+ * @param {*} requestCall 请求接口方法， 返回数据时会中断轮询并返回该数据，需要继续轮询则不返回数据
+ * @param {Object} Obj  Obj.times: 请求次数  Obj.delay: 延迟请求时间  Obj.timeoutMsg: 超时未请求成功返回的提示语
+ * @returns {resData} 接口返回数据
+ */
+export function getRequestRepeatTimes(requestCall, _a) {
+    var _b = _a === void 0 ? {} : _a, _c = _b.times, times = _c === void 0 ? 10 : _c, _d = _b.delay, delay = _d === void 0 ? 1000 : _d, _e = _b.timeoutMsg, timeoutMsg = _e === void 0 ? '请求次数已达上限，请稍后再试' : _e, _f = _b.callResult, callResult = _f === void 0 ? null : _f;
+    return __awaiter(this, void 0, void 0, function () {
+        var doRequest;
+        var _this = this;
+        return __generator(this, function (_g) {
+            switch (_g.label) {
+                case 0:
+                    doRequest = function (requestTimes) {
+                        if (requestTimes === void 0) { requestTimes = 1; }
+                        return __awaiter(_this, void 0, void 0, function () {
+                            var res, result;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, getResult(requestCall, requestTimes)];
+                                    case 1:
+                                        res = _a.sent();
+                                        result = res;
+                                        if (typeof callResult === 'function') {
+                                            result = callResult(res, requestTimes);
+                                        }
+                                        if (!!result) return [3 /*break*/, 4];
+                                        if (!(requestTimes < times)) return [3 /*break*/, 3];
+                                        return [4 /*yield*/, sleepTime(delay)];
+                                    case 2:
+                                        _a.sent();
+                                        return [2 /*return*/, doRequest(requestTimes + 1)];
+                                    case 3: throw new Error(timeoutMsg);
+                                    case 4: return [2 /*return*/, res];
+                                }
+                            });
+                        });
+                    };
+                    return [4 /*yield*/, doRequest()];
+                case 1: return [2 /*return*/, _g.sent()];
+            }
+        });
+    });
+}
+/**
+ * base64 加密， 解密
+ */
+export var Base64 = {
+    // 加密
+    enCode: function (str) {
+        return window.btoa(decodeURIComponent(encodeURIComponent(str)));
+    },
+    // 解密
+    deCode: function (str) {
+        return decodeURIComponent(encodeURIComponent(window.atob(str)));
+    }
+};
+// 语音播报
+export function speakText(text, opts) {
+    opts = opts || {
+        volume: 1,
+        rate: 1,
+        lang: 'zh-CN'
+    };
+    var synth = window.speechSynthesis;
+    var zhVoice = synth.getVoices().find(function (v) { return v.lang == (opts.lang || "zh-CN"); });
+    var utterThis = new SpeechSynthesisUtterance(text);
+    utterThis.voice = zhVoice;
+    utterThis.volume = opts.volume || 1;
+    utterThis.rate = opts.rate || 1;
+    synth.speak(utterThis);
+}
 //# sourceMappingURL=index.js.map

@@ -381,7 +381,7 @@ export const decimal = (num, precision = 2) => {
  * @param {*} num 
  * @returns 
  */
-export const thousands = (num) => {
+export const thousands = (num?:any) => {
   if (!num) return 0
   if (isNaN(num)) return num
   return (+num).toLocaleString()
@@ -390,7 +390,7 @@ export const thousands = (num) => {
 /**
  * 等待
  */
-export async function sleepTime(time = 0, cb) {
+export async function sleepTime(time = 0, cb?: Function) {
   let timer = null
   await new Promise(resolve => {
     function getStatus() {
@@ -513,12 +513,25 @@ export function getTimeStampToHMS(timeStamp:number, lang = 'zh') {
 }
 
 // 判断两个符串是否相同，不区分大小写
-export function isSameURLStr(str1, str2) {
+export function isSameURLStr(str1?:string, str2?:string) {
   if (typeof str1 === 'string' && typeof str2 === 'string') {
     return str1.toLowerCase() === str2.toLowerCase()
   }
   return false
 }
+
+
+/**
+ * 字符串对比
+ */
+export function isSame(str1?:any, str2?:any) {
+  if (typeof str1 === 'string' && typeof str2 === 'string') {
+    return str1.toLowerCase().trim() == str2.toLowerCase().trim()
+  } else {
+    return str1 == str2
+  }
+}
+
 
 // 多选字段转换为字符串提交
 export function transMultipleToStr(val, { action }) {
@@ -536,7 +549,7 @@ export function transMultipleToStr(val, { action }) {
  * @returns 
  */
 // 获取对象对应 key 的值 ，支持 key.childKey 模式
-export function getValueOfObj(obj, key) {
+export function getValueOfObj(obj:any, key:any) {
   if (isEmpty(obj) || isEmpty(key)) return null;
   const keys = String(key).split('.').filter(f => f);
   const value = keys.reduce((item, key) => {
@@ -568,4 +581,66 @@ export const inputOnEnter = function (callBack:any) {
         typeof callBack === 'function' && callBack(event)
     }
   }
+}
+
+
+
+/**
+ * 接口轮询
+ * @param {*} requestCall 请求接口方法， 返回数据时会中断轮询并返回该数据，需要继续轮询则不返回数据
+ * @param {Object} Obj  Obj.times: 请求次数  Obj.delay: 延迟请求时间  Obj.timeoutMsg: 超时未请求成功返回的提示语 
+ * @returns {resData} 接口返回数据
+ */
+export async function getRequestRepeatTimes(requestCall:any, {
+  times = 10,
+  delay = 1000,
+  timeoutMsg = '请求次数已达上限，请稍后再试',
+  callResult = null
+}={}) {
+  const doRequest = async (requestTimes = 1) => {
+    const res = await getResult(requestCall, requestTimes);
+    let result = res;
+    if (typeof callResult === 'function') {
+      result = callResult(res, requestTimes);
+    }
+    if (!result) {
+      if (requestTimes < times) {
+        await sleepTime(delay);
+        return doRequest(requestTimes + 1)
+      } else {
+        throw new Error(timeoutMsg)
+      }
+    }
+    return res
+  }
+  return await doRequest()
+}
+/**
+ * base64 加密， 解密
+ */
+export const Base64 = {
+  // 加密
+  enCode(str:any) {
+    return window.btoa(decodeURIComponent(encodeURIComponent(str)));
+  },
+  // 解密
+  deCode(str:any) {
+    return decodeURIComponent(encodeURIComponent(window.atob(str)));
+  }
+}
+
+// 语音播报
+export function speakText(text:any, opts?:any) {
+  opts = opts || {
+    volume: 1,
+    rate: 1,
+    lang: 'zh-CN'
+  }
+  const synth = window.speechSynthesis;
+  const zhVoice = synth.getVoices().find(v => v.lang == (opts.lang ||"zh-CN"));
+  const utterThis = new SpeechSynthesisUtterance(text);
+  utterThis.voice = zhVoice;
+  utterThis.volume = opts.volume || 1;
+  utterThis.rate = opts.rate || 1;
+  synth.speak(utterThis);
 }

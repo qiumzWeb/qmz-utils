@@ -152,11 +152,11 @@ export declare const decimal: (num: any, precision?: number) => string;
  * @param {*} num
  * @returns
  */
-export declare const thousands: (num: any) => any;
+export declare const thousands: (num?: any) => any;
 /**
  * 等待
  */
-export declare function sleepTime(time: number, cb: any): Promise<any>;
+export declare function sleepTime(time?: number, cb?: Function): Promise<any>;
 /**
  * 通过value 匹配 label 值
  */
@@ -173,7 +173,11 @@ export declare function isInvalidDate(time: any): boolean;
 export declare function getShortStrToTimeLongStr(str: any): any;
 export declare function getToTT(str: any): any;
 export declare function getTimeStampToHMS(timeStamp: number, lang?: string): any;
-export declare function isSameURLStr(str1: any, str2: any): boolean;
+export declare function isSameURLStr(str1?: string, str2?: string): boolean;
+/**
+ * 字符串对比
+ */
+export declare function isSame(str1?: any, str2?: any): boolean;
 export declare function transMultipleToStr(val: any, { action }: {
     action: any;
 }): any;
@@ -190,4 +194,24 @@ export declare function getValueOfObj(obj: any, key: any): any;
 export declare function NumToPercentage(num: any, radix?: number, unit?: string): string;
 export declare const httpToHttps: (url: string) => string;
 export declare const inputOnEnter: (callBack: any) => (event: any) => void;
+/**
+ * 接口轮询
+ * @param {*} requestCall 请求接口方法， 返回数据时会中断轮询并返回该数据，需要继续轮询则不返回数据
+ * @param {Object} Obj  Obj.times: 请求次数  Obj.delay: 延迟请求时间  Obj.timeoutMsg: 超时未请求成功返回的提示语
+ * @returns {resData} 接口返回数据
+ */
+export declare function getRequestRepeatTimes(requestCall: any, { times, delay, timeoutMsg, callResult }?: {
+    times?: number;
+    delay?: number;
+    timeoutMsg?: string;
+    callResult?: any;
+}): Promise<any>;
+/**
+ * base64 加密， 解密
+ */
+export declare const Base64: {
+    enCode(str: any): string;
+    deCode(str: any): string;
+};
+export declare function speakText(text: any, opts?: any): void;
 //# sourceMappingURL=index.d.ts.map
