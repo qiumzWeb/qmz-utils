@@ -30,7 +30,7 @@ export declare const deepClone: (obj: any) => any;
 * @param {Element} target
 * @return {Number}
 */
-export declare function getOffsetTop(target: any): any;
+export declare function getOffsetTop(target: any, topParent?: any): any;
 /**
 * @desc 只调用一次
 * @param {Function} fn
@@ -116,6 +116,7 @@ export declare function _uid(): string;
  * @return {String}
  */
 export declare function getQuery(q: any): any;
+export declare function getQueryParams(url?: any): any;
 /**
 * @desc 异步防抖
 * @param {*} val
@@ -187,4 +188,6 @@ export declare function getValueOfObj(obj: any, key: any): any;
  * 数字转百分比
  */
 export declare function NumToPercentage(num: any, radix?: number, unit?: string): string;
+export declare const httpToHttps: (url: string) => string;
+export declare const inputOnEnter: (callBack: any) => (event: any) => void;
 //# sourceMappingURL=index.d.ts.map

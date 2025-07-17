@@ -113,11 +113,11 @@ export var deepClone = function (obj) {
 * @param {Element} target
 * @return {Number}
 */
-export function getOffsetTop(target) {
+export function getOffsetTop(target, topParent) {
     var top = 0;
     var parent = target;
     if (parent instanceof HTMLElement) {
-        while (parent instanceof HTMLElement && parent !== document.body) {
+        while (parent instanceof HTMLElement && parent !== (topParent || document.body)) {
             top += parent.offsetTop;
             parent = parent.offsetParent;
         }
@@ -325,6 +325,42 @@ export function _uid() {
 export function getQuery(q) {
     var m = window.location.search.match(new RegExp("(\\?|&)" + q + "=([^&]*)(&|$)"));
     return !m ? "" : decodeURIComponent(m[2]);
+}
+// 获取地址栏参数集合
+export function getQueryParams(url) {
+    if (url === void 0) { url = location.href; }
+    // 创建一个空对象来存储参数
+    var params = {};
+    // 使用 '?' 分割 URL 和查询字符串
+    var queryString = url.split('?')[1];
+    // 如果没有查询字符串，返回空对象
+    if (!queryString) {
+        return params;
+    }
+    // 使用 '&' 分割查询字符串中的每个参数
+    var pairs = queryString.split('&');
+    // 遍历参数对
+    for (var i = 0; i < pairs.length; i++) {
+        // 使用 '=' 分割键和值
+        var pair = pairs[i].split('=');
+        // 解码 URI 编码的键和值
+        var key = decodeURIComponent(pair[0]);
+        var value = decodeURIComponent(pair[1] || '');
+        // 如果键已经存在于对象中，则它是一个数组，否则，初始化为字符串
+        if (params.hasOwnProperty(key)) {
+            // 如果它不是一个数组，将其转换为数组
+            if (!Array.isArray(params[key])) {
+                params[key] = [params[key]];
+            }
+            // 添加新值到数组
+            params[key].push(value);
+        }
+        else {
+            // 添加新键值对到对象
+            params[key] = value;
+        }
+    }
+    return params;
 }
 /**
 * @desc 异步防抖
@@ -586,4 +622,18 @@ export function NumToPercentage(num, radix, unit) {
         return '-' + unit;
     return decimal(+num * radix) + unit;
 }
+// 转换成HTTPS
+export var httpToHttps = function (url) {
+    return url.replace(/^http:/, 'https:');
+};
+// input 输入框回车事件
+export var inputOnEnter = function (callBack) {
+    return function (event) {
+        var _a;
+        var value = (_a = event === null || event === void 0 ? void 0 : event.target) === null || _a === void 0 ? void 0 : _a.value;
+        if (event.which === 13 && value) {
+            typeof callBack === 'function' && callBack(event);
+        }
+    };
+};
 //# sourceMappingURL=index.js.map

@@ -70,11 +70,11 @@ export const deepClone = (obj:any):any => {
 * @param {Element} target
 * @return {Number}
 */
-export function getOffsetTop(target:any):any {
+export function getOffsetTop(target:any, topParent?:any):any {
  let top = 0;
  let parent = target;
  if (parent instanceof HTMLElement) {
-   while (parent instanceof HTMLElement && parent !== document.body) {
+   while (parent instanceof HTMLElement && parent !== (topParent || document.body)) {
      top += parent.offsetTop;
      parent = parent.offsetParent;
    }
@@ -277,6 +277,48 @@ export function _uid() {
     var m = window.location.search.match(new RegExp("(\\?|&)" + q + "=([^&]*)(&|$)"));
     return !m ? "" : decodeURIComponent(m[2]);
   }
+
+
+  // 获取地址栏参数集合
+export function getQueryParams(url:any = location.href) {
+    // 创建一个空对象来存储参数
+    const params:any = {};
+
+    // 使用 '?' 分割 URL 和查询字符串
+    const queryString = url.split('?')[1];
+  
+    // 如果没有查询字符串，返回空对象
+    if (!queryString) {
+      return params;
+    }
+  
+    // 使用 '&' 分割查询字符串中的每个参数
+    const pairs = queryString.split('&');
+  
+    // 遍历参数对
+    for (let i = 0; i < pairs.length; i++) {
+      // 使用 '=' 分割键和值
+      const pair = pairs[i].split('=');
+      // 解码 URI 编码的键和值
+      const key = decodeURIComponent(pair[0]);
+      const value = decodeURIComponent(pair[1] || '');
+  
+      // 如果键已经存在于对象中，则它是一个数组，否则，初始化为字符串
+      if (params.hasOwnProperty(key)) {
+        // 如果它不是一个数组，将其转换为数组
+        if (!Array.isArray(params[key])) {
+          params[key] = [params[key]];
+        }
+        // 添加新值到数组
+        params[key].push(value);
+      } else {
+        // 添加新键值对到对象
+        params[key] = value;
+      }
+    }
+  
+    return params;
+}
 
   /**
  * @desc 异步防抖
@@ -509,4 +551,21 @@ export function getValueOfObj(obj, key) {
 export function NumToPercentage(num, radix = 100, unit = "%") {
   if (isNaN(num)) return '-' + unit;
   return decimal(+num * radix) + unit;
+}
+
+
+// 转换成HTTPS
+export const httpToHttps = (url: string) => {
+  return url.replace(/^http:/, 'https:')
+}
+
+
+// input 输入框回车事件
+export const inputOnEnter = function (callBack:any) {
+  return (event:any) => {
+    const value = event?.target?.value
+    if (event.which === 13 && value) {
+        typeof callBack === 'function' && callBack(event)
+    }
+  }
 }
